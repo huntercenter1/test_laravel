@@ -1,0 +1,6 @@
+@extends('layouts.app')
+
+@section('content')
+<h1 class="h3 mb-3">Editar Persona</h1>
+@include('people._form', ['person' => $person])
+@endsection
