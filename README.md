@@ -7,55 +7,203 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+Prueba Técnica – Dev PHP (Laravel 11 + MySQL)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+CRUD de Personas con validaciones en cliente (JS) y servidor (PHP).
+Cumple con los 5 tipos de campos solicitados:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Text: name
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Textarea: description
 
-## Learning Laravel
+Radio: gender (M/F)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Checkbox: hobbies[] (JSON)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Select: country_id (relación con countries)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Incluye:
 
-## Laravel Sponsors
+Programación orientada a objetos (Modelos, Controlador, Vistas Blade).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Mensajes de éxito y error.
 
-### Premium Partners
+Control de errores (try/catch + logs).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Base de datos versionada con migraciones y seeders (idempotentes).
 
-## Contributing
+1) Requisitos
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+PHP >= 8.2 (con extensión pdo_mysql)
 
-## Code of Conduct
+Composer
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+MySQL 8.x (o MariaDB 10.6+)
 
-## Security Vulnerabilities
+(Opcional) Node/NPM si deseas compilar assets, pero no es necesario para esta prueba.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2) Clonar el repositorio
+git clone https://github.com/huntercenter1/test_laravel.git 
 
-## License
+3) Configuración de entorno (.env)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Crea tu archivo .env (o duplica .env.example si existe):
+
+cp .env.example .env
+
+
+Asegúrate de configurar MySQL (no SQLite). Reemplaza valores según tu entorno:
+
+APP_NAME="Prueba PHP"
+APP_ENV=local
+APP_KEY=            # se genera en el paso 6
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+# Base de datos: MySQL
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=prueba_php
+DB_USERNAME=laravel
+DB_PASSWORD=laravel_secret
+
+
+Si usas otras credenciales/puerto, ajústalas aquí.
+
+4) Crear la base de datos (MySQL)
+
+Si ya tienes una DB/usuario, puedes saltarte este paso.
+A continuación se muestra el orden correcto y los comandos exactos:
+
+Entrar a MySQL como root (en Linux/WSL suele autenticar por socket):
+
+sudo mysql
+
+
+Crear DB, usuario y permisos:
+
+CREATE DATABASE IF NOT EXISTS prueba_php
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'laravel'@'localhost' IDENTIFIED BY 'laravel_secret';
+GRANT ALL PRIVILEGES ON prueba_php.* TO 'laravel'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+Probar conexión (opcional pero recomendado):
+
+mysql -u laravel -p -h 127.0.0.1 -D prueba_php -e "SELECT DATABASE();"
+# Password: laravel_secret
+
+5) Instalar dependencias PHP
+composer install
+
+6) Generar APP_KEY y limpiar cachés
+php artisan key:generate
+php artisan optimize:clear
+
+7) Migraciones y seeders
+# Crea el esquema y llena datos básicos (países y usuario demo)
+php artisan migrate --seed
+
+
+Seeders idempotentes: puedes ejecutar php artisan db:seed varias veces sin duplicar registros.
+
+8) Levantar el servidor
+php artisan serve --host=127.0.0.1 --port=8000
+
+
+App: http://127.0.0.1:8000
+
+CRUD: http://127.0.0.1:8000/people
+
+9) Credenciales de prueba
+
+Usuario demo (creado por el seeder):
+test@example.com / password
+
+No es necesario para navegar el CRUD de ejemplo, pero queda disponible.
+
+10) ¿Qué encontrarás?
+
+Rutas: routes/web.php (resource people)
+
+Controlador: app/Http/Controllers/PersonController.php
+
+Modelos: app/Models/Country.php, app/Models/Person.php
+
+Migraciones: database/migrations/*create_countries_table.php, *create_people_table.php
+
+Seeders: database/seeders/CountrySeeder.php, database/seeders/DatabaseSeeder.php
+
+Vistas: resources/views/people/*, resources/views/layouts/app.blade.php
+
+Formulario (crear/editar) con los 5 tipos de campos, validación en cliente (JS simple en el layout) y validación en servidor ($request->validate()).
+
+Listado con paginación, acciones Editar/Eliminar y mensajes de éxito/error.
+
+11) Comandos útiles
+# Ejecutar solo seeder de países
+php artisan db:seed --class=CountrySeeder
+
+# Resetear base y resembrar (destructivo)
+php artisan migrate:fresh --seed
+
+# Limpiar cachés (útil tras tocar .env)
+php artisan optimize:clear
+
+12) Solución de problemas
+
+“Connection: sqlite” o errores con SQLite
+Verifica que en .env tengas:
+
+DB_CONNECTION=mysql
+
+
+y ejecuta:
+
+php artisan optimize:clear
+
+
+“Access denied for user 'laravel'@'localhost'”
+Repite la creación de usuario/privilegios:
+
+DROP USER IF EXISTS 'laravel'@'localhost';
+CREATE USER 'laravel'@'localhost' IDENTIFIED BY 'laravel_secret';
+GRANT ALL PRIVILEGES ON prueba_php.* TO 'laravel'@'localhost';
+FLUSH PRIVILEGES;
+
+
+Y prueba:
+
+mysql -u laravel -p -h 127.0.0.1 -D prueba_php -e "SELECT 1;"
+
+
+PHP sin pdo_mysql
+Instálalo:
+
+# Debian/Ubuntu
+sudo apt install -y php-mysql
+php -m | grep -i pdo_mysql
+
+
+MySQL no arranca / socket no encontrado
+
+sudo service mysql status
+sudo service mysql start
+
+13) Cumplimiento de la prueba
+
+OOP: Eloquent Models, Controller, Views.
+
+5 tipos de campos: Text, Textarea, Select, Radio, Checkbox.
+
+Validación: Cliente (JS) + Servidor (PHP).
+
+Mensajes: Éxito/Error visibles en UI.
+
+Errores runtime: Manejo con try/catch y Log::error.
+
+BD versionada: Migraciones + Seeders.
